@@ -11,7 +11,7 @@ WINDOW_HEIGHT = 720
   Runs when the game first starts up, only once; used to initialize the game.
 ]]
 
-function love.load()
+function love.load()  -- initializes game state, the bootstrap
   love.window.setMode(WINDOW_WIDTH, WINDOW_HEIGHT, {
     fullscreen = false,
     resizable = false,
