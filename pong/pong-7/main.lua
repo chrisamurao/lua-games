@@ -46,6 +46,8 @@ function love.load()
 
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
+    love.window.setTitle('Pong')
+
     -- "seed" the RNG so that calls to random are always random
     -- use the current time, since that will vary on startup every time
     math.randomseed(os.time())
@@ -60,6 +62,11 @@ function love.load()
         resizable = false,
         vsync = true
     })
+
+    -- initialize score variables, used for rendering on the screen and keeping
+    -- track of the winner
+    player1Score = 0
+    player2Score = 0
 
     -- initialize our player paddles; make them global so that they can be
     -- detected by other functions and modules
@@ -77,22 +84,48 @@ end
 
 
 function love.update(dt)
-  --[[
-  --old player 1 movement
 
-  if love.keyboard.isDown('w') then
-    player1Y = math.max(0, player1Y + -PADDLE_SPEED * dt)
-  elseif love.keyboard.isDown('s') then
-    player1Y = math.min(VIRTUAL_HEIGHT - 20, player1Y + PADDLE_SPEED * dt)
-  end
+  if gameState == 'play' then
+    -- detect ball collision with paddles, reversing dx if true and
+    -- slightly increasing it, then altering the dy based on the position of collision
+    
+      if ball:collides(player1) then
+        ball.dx = -ball.dx * 1.03
+        ball.x = player1.x + 5
 
-  -- old player 2 movement
-  if love.keyboard.isDown('up') then
-    player2Y = math.max(0, player2Y + -PADDLE_SPEED * dt)
-  elseif love.keyboard.isDown('down') then
-    player2Y = math.min(VIRTUAL_HEIGHT - 20, player2Y + PADDLE_SPEED * dt)
-  end
-  ]]
+        -- keey velocity going in the same direction, but randomize it
+        if ball.dy < 0 then
+          ball.dy = math.random(10, 150)
+        else
+          ball.dy = math.random(10, 150)
+        end
+      end
+      if ball:collides(player2) then
+        ball.dx = -ball.dx * 1.03
+        ball.x = player2.x - 4
+
+        --leey velocity going in the same direction, but randomize it
+        if ball.dy < 0 then
+          ball.dy = -math.random(10, 150)
+        else
+          ball.dy = math.random(10, 150)
+        end
+      end
+
+      --detect upper and lower screen boundary collision and reverse if collided
+      if ball.y <= 0 then
+        ball.y = 0
+        ball.dy = -ball.dy
+      end
+
+      -- -4 to account for the size of the ball
+      if ball.y >= VIRTUAL_HEIGHT - 4 then
+        ball.y = VIRTUAL_HEIGHT -4
+        ball.dy = -ball.dy
+      end
+    end
+
+
 
   --player 1 movement
   if love.keyboard.isDown('w') then
@@ -117,17 +150,12 @@ function love.update(dt)
   -- update our ball based on its DX and DY only if we're in play state;
   -- scale the velocity by dt so movement is framerate-independent
 
-  --[[
-    --old code without using classes
-    
-    if gameState == 'play' then
-      ballX = ballX + ballDX * dt
-      ballY = ballY + ballDY * dt
-    end
-  ]]
-
   player1:update(dt)
   player2:update(dt)
+
+  if gameState == 'play' then
+    ball:update(dt)
+  end
 
 end
   
@@ -141,19 +169,6 @@ function love.keypressed(key)
     else
       gameState = 'start'
 
-
-      --[[
-        --start ball's position in the middle of the screen
-        ballX = VIRTUAL_WIDTH / 2 - 2
-        ballY = VIRTUAL_HEIGHT / 2 -2 
-        
-        --given ball's x and y velocity a random starting value
-        --the and/or pattern here is Lua's way of accomplishing a ternary operation
-        -- in other programming languages like C
-        ballDX = math.random(2) == 1 and 100 or -100
-        ballDY = math.random(-50, 50) * 1.5
-
-      ]]
 
       ball:reset()
     end
@@ -183,11 +198,11 @@ function love.draw()
 
     -- draw score on the left and right center of the screen
     -- need to switch font to draw before actually printing
-    -- love.graphics.setFont(scoreFont)
-    -- love.graphics.print(tostring(player1Score), VIRTUAL_WIDTH / 2 - 50, 
-    --     VIRTUAL_HEIGHT / 3)
-    -- love.graphics.print(tostring(player2Score), VIRTUAL_WIDTH / 2 + 30,
-    --     VIRTUAL_HEIGHT / 3)
+    love.graphics.setFont(scoreFont)
+    love.graphics.print(tostring(player1Score), VIRTUAL_WIDTH / 2 - 50, 
+        VIRTUAL_HEIGHT / 3 - 40)
+    love.graphics.print(tostring(player2Score), VIRTUAL_WIDTH / 2 + 30,
+        VIRTUAL_HEIGHT / 3 - 40)
 
 
     --[[

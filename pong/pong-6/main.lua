@@ -1,6 +1,6 @@
 --[[
   Pong
-  "Low-Res update"
+  "FPS update"
 
   -- Main Program --
 
@@ -127,6 +127,10 @@ function love.update(dt)
       ballY = ballY + ballDY * dt
     end
   ]]
+
+  if gameState == 'play' then
+    ball:update(dt)
+  end
 
   player1:update(dt)
   player2:update(dt)
