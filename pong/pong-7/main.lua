@@ -46,8 +46,6 @@ function love.load()
 
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
-    love.window.setTitle('Pong')
-
     -- "seed" the RNG so that calls to random are always random
     -- use the current time, since that will vary on startup every time
     math.randomseed(os.time())
