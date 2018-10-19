@@ -54,9 +54,7 @@ function love.draw()
 
   --draw the background starting at top left (0, 0)
   love.graphics.draw(background, 0, 0)
-
   --draw the ground on top of the background, toward the bottom of the screen
-  love.graphics.draw(ground, 0, VIRTUAL_HEIGHT - 16) 
 
   push:finish()
 end 
