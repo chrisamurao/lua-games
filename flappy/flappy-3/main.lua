@@ -1,7 +1,7 @@
 --[[
   Flappy Bird
 
-  v0.2 - Bird update
+  v0.3 - Gravity update
 
   * Procedural generation
   * Animated characters (sprites)
@@ -79,6 +79,8 @@ function love.update(dt)
   -- scroll ground by preset speed * dt, looping back to 0 after the screen width passes
   groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt)
     % VIRTUAL_WIDTH
+
+    bird:update(dt)
 
 end
 
