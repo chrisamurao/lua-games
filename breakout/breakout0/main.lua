@@ -160,7 +160,7 @@ end
 ]]
 function love.draw()
     -- begin drawing with push, in our virtual resolution
-    push:apply('start')
+    push:start()
 
     -- background should be drawn regardless of state, scaled to fit our
     -- virtual resolution
@@ -181,7 +181,7 @@ function love.draw()
     -- display FPS for debugging; simply comment out to remove
     displayFPS()
     
-    push:apply('end')
+    push:finish()
 end
 
 --[[
